@@ -1,0 +1,7 @@
+RISK_MODEL = {
+    "EXECVE": 3.0,
+    "MEMFD_CREATE": 8.5,
+    "MPROTECT_EXEC": 7.5,
+    "PROCESS_VM_WRITEV": 9.2,
+    "NETWORK_CONNECT": 4.0
+}
