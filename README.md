@@ -1,35 +1,39 @@
 # Detection Visibility Probe (DVP)
 
-A container security monitoring system that uses eBPF to detect and analyze potential security threats in real-time. DVP provides comprehensive visibility into containerized workloads by monitoring system calls, enriching events with threat intelligence, and identifying detection gaps across security layers.
+Detection Visibility Probe (DVP) is a lightweight eBPF-based sensor for detection engineers that helps measure runtime telemetry coverage, validate detection rules, and identify visibility gaps across Linux environments.
+
 
 ## Features
 
-- **Real-time eBPF Monitoring**: Uses eBPF tracepoints to monitor critical system calls without performance overhead
-- **Threat Intelligence Enrichment**: Maps events to MITRE ATT&CK techniques and assigns risk scores
-- **Visibility Gap Analysis**: Identifies which security tools lack visibility into detected events
-- **Attack Chain Detection**: Detects fileless execution patterns and other attack sequences
-- **Multi-format Export**: Supports JSON logging and Splunk fixture generation for integration
-- **Container-aware**: Targets specific containers using cgroup isolation
+- eBPF runtime telemetry collection
+- Container-scoped tracing (via cgroups)
+- MITRE ATT&CK mapping
+- Detection visibility matrix scoring
+- Namespace-aware enrichment
+- Fileless execution signal detection
+- Memory injection primitive detection
+- Splunk Detection-as-Code fixture generation support
 
 ## Monitored Events
-
-- **EXECVE**: Process execution events
-- **MEMFD_CREATE**: Memory file descriptor creation (fileless execution primitive)
-- **MPROTECT_EXEC**: Memory protection changes to executable
-- **PROCESS_VM_WRITEV**: Process memory injection
-- **NETWORK_CONNECT**: Network connection attempts
+| Primitive           | ATT&CK Technique      |
+| ------------------- | --------------------- |
+| execve              | T1106                 |
+| memfd_create        | T1620                 |
+| process_vm_writev   | T1055                 |
+| mprotect(PROT_EXEC) | Shellcode loaders     |
+| connect()           | C2 / pivot indicators |
 
 ## Architecture
 
 ```
-sensor.py (Python)
-├── ebpf/runtime_probe.c (eBPF program)
+sensor.py
+├── ebpf/runtime_probe.c
 ├── Enrichment Modules
-│   ├── attack_map.py (MITRE ATT&CK mapping)
-│   ├── risk_model.py (Risk scoring)
-│   ├── visibility_matrix.py (Tool visibility)
-│   ├── chain_detector.py (Attack pattern detection)
-│   └── gap_analyzer.py (Detection gap analysis)
+│   ├── attack_map.py
+│   ├── risk_model.py
+│   ├── visibility_matrix.py
+│   ├── chain_detector.py
+│   └── gap_analyzer.py
 └── Exporters
     ├── json_logger.py
     └── splunk_fixture.py
@@ -74,10 +78,10 @@ python sensor.py -c <container_name> [options]
 
 ```bash
 # Monitor nginx container with gap analysis
-python sensor.py -c nginx --gap-analysis
+python sensor.py -c ubuntu --gap-analysis
 
 # Generate Splunk test fixtures
-python sensor.py -c webapp --emit-splunk-tests
+python sensor.py -c ubuntu --emit-splunk-tests
 ```
 
 ## Output Format
